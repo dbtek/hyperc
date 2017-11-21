@@ -1,4 +1,8 @@
 {
+  "name": "hyperc",
+  "version": "0.1.0",
+  "repository": "https://github.com/dbtek/hyperc",
+  "license": "MIT",
   "scripts": {
     "start": "budo demo.js -d public -s bundle.js -lo -- -g es2040"
   },
