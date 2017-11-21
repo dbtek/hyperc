@@ -1,0 +1,73 @@
+hyperC
+===
+
+State driven high performance canvas graphics framework based on EaselJS and JSON Patch.
+
+Currently, HyperC is in alpha stage, things may change.
+
+Highly inspired from [choojs/choo](https://github.com/choojs/choo).
+
+### Example
+
+```js
+const HyperC = require('hyperc')
+const consecutive = require('hyperc/consecutive')
+var app = new HyperC('#stage')
+
+function circleStore(state, emitter) {
+  var nextId = consecutive()
+  state.circles = {}
+
+  function addItem(item) {
+    const id = nextId()
+    state.circles[id] = Object.assign({}, item, {id})
+  }
+
+  addItem({x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'})
+
+  emitter.on('circle:add', item => {
+    addItem(item)
+    emitter.emit('render')
+  })
+
+  emitter.on('circle:moveItem', ({id, x, y}) => {
+    state.circles[id].x = x
+    state.circles[id].y = y
+    emitter.emit('render')
+  })
+}
+
+function circlesRenderer(state, emit) {
+  return {
+    add(container, item) {
+      var circle = new createjs.Shape()
+      circle.graphics.beginFill(item.color).drawCircle(0, 0, item.radius).endFill()
+      circle.id = item.id
+      circle.x = item.x
+      circle.y = item.y
+      container.addChild(circle)
+
+      circle.on('pressmove', e => {
+        emit('circle:moveItem', {
+          id: e.target.id,
+          x: e.stageX,
+          y: e.stageY
+        })
+      })
+    },
+    replace(container, item) {
+      const [circle] = container.children
+      circle.x = item.x
+      circle.y = item.y
+      circle.graphics.clear().beginFill(item.color).drawCircle(0, 0, item.radius).endFill()
+    }
+  }
+}
+
+// add store
+app.use(circleStore)
+
+// add renderer
+app.render('circles', circlesRenderer)
+
+```
