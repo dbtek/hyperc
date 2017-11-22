@@ -9,8 +9,6 @@
   "dependencies": {
     "clone": "^2.1.1",
     "consecutive": "^5.0.4",
-    "createjs": "^1.0.1",
-    "easeljs": "^1.0.2",
     "just-diff": "^2.1.0",
     "nanobus": "^4.3.1"
   },
