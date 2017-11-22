@@ -1,18 +1,18 @@
-hyperC
+hyperc
 ===
 
 State driven high performance canvas graphics framework based on EaselJS and JSON Patch.
 
-Currently, HyperC is in alpha stage, things may change.
+Currently, hyperc is in alpha stage, things may change.
 
 Highly inspired from [choojs/choo](https://github.com/choojs/choo).
 
 ### Example
 
 ```js
-const HyperC = require('hyperc')
+const Hyperc = require('hyperc')
 const consecutive = require('hyperc/consecutive')
-var app = new HyperC('#stage')
+var app = new Hyperc('#stage')
 
 function circleStore(state, emitter) {
   var nextId = consecutive()
