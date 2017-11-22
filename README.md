@@ -16,8 +16,13 @@ var app = new Hyperc('#stage')
 
 function circleStore(state, emitter) {
   var nextId = consecutive()
+  // store should add a unique container to state
+  // this key will be used to bind renderer
   state.circles = {}
 
+  // adds a new item to store
+  // items should be id keyed objects
+  // here, provided consecutive helper is used to create sequential ids
   function addItem(item) {
     const id = nextId()
     state.circles[id] = Object.assign({}, item, {id})
@@ -67,7 +72,7 @@ function circlesRenderer(state, emit) {
 // add store
 app.use(circleStore)
 
-// add renderer
+// add renderer with store key to bind it
 app.render('circles', circlesRenderer)
 
 ```
