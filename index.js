@@ -6,7 +6,10 @@ const { diff } = require('just-diff')
 module.exports = class HyperC {
   constructor(selector) {
     assert.ok(typeof selector === 'string' || typeof selector === 'object', 'hyperc selector should be type String or HTMLElement')
-    this.stage = new createjs.Stage(document.querySelector(selector))
+    if (typeof selector === 'string') {
+      selector = document.querySelector(selector)
+    }
+    this.stage = new createjs.Stage(selector)
     this.stage.name = 'HyperC Root Stage'
     this.emitter = nanobus('hyperc.emit')
     this.state = {}
