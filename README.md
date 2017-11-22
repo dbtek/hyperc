@@ -16,6 +16,7 @@ var app = new Hyperc('#stage')
 
 function circleStore(state, emitter) {
   var nextId = consecutive()
+  
   // store should add a unique container to state
   // this key will be used to bind renderer
   state.circles = {}
