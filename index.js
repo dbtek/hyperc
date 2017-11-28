@@ -58,13 +58,28 @@ module.exports = class HyperC {
     }
     this.prevState = clone(this.state)
     
+    var diffs = []
     for (var mdiff of result) {
+      if (mdiff.path.length === 1) {
+        for (var key in mdiff.value) {
+          var newDiff = {}
+          newDiff = {
+            op: mdiff.op,
+            path: mdiff.path.concat([key]),
+            value: mdiff.value[key]
+          }
+          diffs.push(newDiff)
+        }
+      }
+      else {
+        diffs.push(mdiff)
+      }
+    }
+
+    for (var mdiff of diffs) {
       var container = null
       var namespace = mdiff.path[0]
       var itemId = mdiff.path[1]
-      if (mdiff.path.length === 1) {
-        itemId = Object.keys(mdiff.value)[0]
-      }
       var item = this.state[namespace][itemId]
       var view = this._views[namespace]
 
