@@ -2,6 +2,7 @@ const assert = require('assert')
 const nanobus = require('nanobus')
 const clone = require('clone')
 const { diff } = require('just-diff')
+const Component = require('./component')
 
 module.exports = class HyperC {
   constructor(selector) {
@@ -33,17 +34,16 @@ module.exports = class HyperC {
     cb(this.state, this.emitter, this)
   }
 
-  render(namespace, cb) {
+  render(namespace, Cls) {
+    assert(Cls.prototype instanceof Component, 'render only accepts classes inherited Component')
     var container = new createjs.Container()
     var self = this
     container.name = namespace
     this.stage.addChild(container)
     this._views[namespace] = {
-      renderer: cb(this.state, (eventName, data) => {
-        self.emitter.emit(eventName, data)
-      }),
+      Component: Cls,
       container,
-      containers: {}
+      components: {}
     }
   }
 
@@ -77,22 +77,27 @@ module.exports = class HyperC {
     }
 
     for (var mdiff of diffs) {
-      var container = null
+      var component = null
       var namespace = mdiff.path[0]
       var itemId = mdiff.path[1]
       var item = this.state[namespace][itemId]
       var view = this._views[namespace]
+      var self = this
+      // if diff does not concern any view skip it
+      if (!view) return
 
       if (mdiff.op === 'add') {
         if (mdiff.path.length > 2) {
           mdiff.op = 'replace'
         }
         else {
-          container = new createjs.Container()
-          container.name = `${namespace}-${itemId}`
-          view.container.addChild(container)
-          view.containers[itemId] = container
-          view.renderer.add(container, item)
+          component = new view.Component(this.state, ((eventName, data) => {
+            self.emitter.emit(eventName, data)
+          }), item)
+          component.container.name = `${namespace}-${itemId}`
+          view.container.addChild(component.container)
+          view.components[itemId] = component
+          component.create(item)
         }
       }
 
@@ -101,15 +106,15 @@ module.exports = class HyperC {
           mdiff.op = 'replace'
         }
         else {
-          container = view.containers[itemId]
+          component = view.components[itemId]
           view.container.removeChild(container)
           delete view.container[itemId]
         }
       }
 
       if (mdiff.op === 'replace') {
-        container = view.containers[itemId]
-        view.renderer.replace(container, item)
+        component = view.components[itemId]
+        component.update(item, mdiff)
       }
 
       // render updates
