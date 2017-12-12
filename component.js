@@ -1,27 +1,24 @@
-const assert = require('assert')
-const diff = require('just-diff').diff
-
 class Component {
-  constructor(state, emit, props) {
+  constructor (state, emit, props) {
     this.id = this.identity(props)
     this.state = state
     this.emit = emit
-    this.container = new createjs.Container()
+    this.container = new window.createjs.Container()
   }
 
-  static getItems() {
+  static getItems () {
     throw new Error('hyperc/component: getItems should be implemented!')
   }
 
-  identity() {
+  identity () {
     throw new Error('hyperc/component: identity should be implemented!')
   }
 
-  create() {
+  create () {
     throw new Error('hyperc/component: create should be implemented!')
   }
 
-  update() {
+  update () {
     throw new Error('hyperc/component: update should be implemented!')
   }
 }
