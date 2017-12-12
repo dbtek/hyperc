@@ -1,6 +1,9 @@
 hyperc
 ===
 
+[![Build Status](https://circleci.com/gh/dbtek/hyperc.svg?style=svg&circle-token=061015e3efd0d84ec8598946ba22c3e071677c33) ](https://circleci.com/gh/dbtek/hyperc)  [ ![Test Coverage](https://img.shields.io/codecov/c/token/bDcjOrSeM2/github/dbtek/hyperc/master.svg?style=flat-square) ](https://codecov.io/github/dbtek/hyperc)  [ ![Standard](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://codecov.io/github/dbtek/hyperc)
+
+
 State driven high performance canvas graphics framework based on EaselJS and JSON Patch.
 
 Currently, hyperc is in alpha stage, things may change.
