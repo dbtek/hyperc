@@ -17,7 +17,7 @@ Highly inspired from [choojs/choo](https://github.com/choojs/choo).
 ```js
 const Hyperc = require('hyperc')
 const Component = require('hyperc/component')
-const consecutive = require('hyperc/consecutive')
+const consecutive = require('consecutive')
 
 var app = new Hyperc('#stage')
 

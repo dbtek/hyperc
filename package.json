@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "clone": "^2.1.1",
-    "consecutive": "^5.0.4",
     "just-diff": "^2.1.0",
     "nanobus": "^4.3.1"
   },
   "devDependencies": {
     "budo": "^10.0.4",
+    "consecutive": "^5.0.4",
     "es2040": "^1.2.6"
   }
 }

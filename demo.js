@@ -1,6 +1,6 @@
 const Hyperc = require('./index')
 const Component = require('./component')
-const consecutive = require('./consecutive')
+const consecutive = require('consecutive')
 
 var app = new Hyperc('#stage')
 
