@@ -1,3 +1,5 @@
 public
 demo.js
 yarn.lock
+.circleci
+test.js
