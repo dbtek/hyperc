@@ -4,7 +4,8 @@
   "repository": "https://github.com/dbtek/hyperc",
   "license": "MIT",
   "scripts": {
-    "start": "budo demo.js -d public -s bundle.js -lo -- -g es2040"
+    "start": "budo demo.js -d public -s bundle.js -lo -- -g es2040",
+    "test": "standard *.js && node test | tap-spec"
   },
   "dependencies": {
     "clone": "^2.1.1",
@@ -14,6 +15,10 @@
   "devDependencies": {
     "budo": "^10.0.4",
     "consecutive": "^5.0.4",
-    "es2040": "^1.2.6"
+    "es2040": "^1.2.6",
+    "jsdom": "^11.5.1",
+    "standard": "^10.0.3",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.8.0"
   }
 }
