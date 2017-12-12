@@ -5,31 +5,32 @@ const consecutive = require('./consecutive')
 var app = new Hyperc('#stage')
 
 function circleStore(state, emitter) {
-  state.circles = {
-    1: {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
-  }
+  state.circles = [
+    {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
+  ]
   // set next id 2
   var nextId = consecutive(2)
 
-  // adds a new item to store
-  function addItem(item) {
-    const id = nextId()
-    state.circles[id] = Object.assign({}, item, {id})
-  }
-
   emitter.on('circle:add', item => {
-    addItem(item)
+    const id = nextId()
+    state.circles.push(Object.assign({}, item, {id}))
     emitter.emit('render')
   })
 
   emitter.on('circle:moveItem', ({id, x, y}) => {
-    state.circles[id].x = x
-    state.circles[id].y = y
+    var circle = state.circles.filter(c => c.id === id)[0]
+    if (!circle) return
+    circle.x = x
+    circle.y = y
     emitter.emit('render')
   })
 }
 
 class Circle extends Component {
+  static getItems(state) {
+    return state.circles
+  }
+
   identity(props) {
     return props.id
   }
@@ -42,7 +43,6 @@ class Circle extends Component {
     this.shape = shape
     // add newly created shape to component's container
     this.container.addChild(shape)
-
     shape.on('pressmove', e => {
       this.emit('circle:moveItem', {
         id: this.id,
@@ -63,7 +63,7 @@ class Circle extends Component {
 app.use(circleStore)
 
 // add renderer
-app.render('circles', Circle)
+app.render(Circle)
 
 // handle add circle button
 function handleAddCircle() {

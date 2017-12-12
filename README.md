@@ -22,45 +22,44 @@ const consecutive = require('hyperc/consecutive')
 var app = new Hyperc('#stage')
 
 function circleStore(state, emitter) {
-  state.circles = {
-    1: {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
-  }
+  state.circles = [
+    {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
+  ]
   // set next id 2
   var nextId = consecutive(2)
 
-  // adds a new item to store
-  // items should be id keyed objects
-  // here, provided consecutive helper is used to create sequential ids
-  function addItem(item) {
-    const id = nextId()
-    state.circles[id] = Object.assign({}, item, {id})
-  }
-
   emitter.on('circle:add', item => {
-    addItem(item)
+    const id = nextId()
+    state.circles.push(Object.assign({}, item, {id}))
     emitter.emit('render')
   })
 
   emitter.on('circle:moveItem', ({id, x, y}) => {
-    state.circles[id].x = x
-    state.circles[id].y = y
+    var circle = state.circles.filter(c => c.id === id)[0]
+    if (!circle) return
+    circle.x = x
+    circle.y = y
     emitter.emit('render')
   })
 }
 
 class Circle extends Component {
+  static getItems(state) {
+    return state.circles
+  }
+
   identity(props) {
     return props.id
   }
 
   create(props) {
-    const shape = new createjs.Shape()
+    var shape = new createjs.Shape()
     shape.graphics.beginFill(props.color).drawCircle(0, 0, props.radius).endFill()
     shape.x = props.x
     shape.y = props.y
+    this.shape = shape
     // add newly created shape to component's container
     this.container.addChild(shape)
-
     shape.on('pressmove', e => {
       this.emit('circle:moveItem', {
         id: this.id,
@@ -71,10 +70,9 @@ class Circle extends Component {
   }
 
   update(props, patch) {
-    const [shape] = this.container.children
-    shape.x = props.x
-    shape.y = props.y
-    shape.graphics.clear().beginFill(props.color).drawCircle(0, 0, props.radius).endFill()
+    this.shape.x = props.x
+    this.shape.y = props.y
+    this.shape.graphics.clear().beginFill(props.color).drawCircle(0, 0, props.radius).endFill()
   }
 }
 
@@ -82,5 +80,5 @@ class Circle extends Component {
 app.use(circleStore)
 
 // add renderer
-app.render('circles', Circle)
+app.render(Circle)
 ```

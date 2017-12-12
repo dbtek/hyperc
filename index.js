@@ -14,7 +14,7 @@ module.exports = class HyperC {
     this.stage.name = 'HyperC Root Stage'
     this.emitter = nanobus('hyperc.emit')
     this.state = {}
-    this._views = {}
+    this._views = []
 
     var self = this
 
@@ -30,95 +30,80 @@ module.exports = class HyperC {
   }
 
   use(cb) {
-    assert.equal(typeof cb, 'function', 'choo.use: cb should be type function')
+    assert.equal(typeof cb, 'function', 'hyperc.use: cb should be type function')
     cb(this.state, this.emitter, this)
   }
 
-  render(namespace, Cls) {
+  render(Cls) {
     assert(Cls.prototype instanceof Component, 'render only accepts classes inherited Component')
     var container = new createjs.Container()
     var self = this
-    container.name = namespace
     this.stage.addChild(container)
-    this._views[namespace] = {
+    this._views.push({
       Component: Cls,
       container,
       components: {}
-    }
+    })
   }
 
   doDiff() {
-    var result
-
-    if (!this.prevState) {
-      result = diff({}, this.state)
-    }
-    else {
-      result = diff(this.prevState, this.state)
-    }
-    this.prevState = clone(this.state)
-    
-    var diffs = []
-    for (var mdiff of result) {
-      if (mdiff.path.length === 1) {
-        for (var key in mdiff.value) {
-          var newDiff = {}
-          newDiff = {
-            op: mdiff.op,
-            path: mdiff.path.concat([key]),
-            value: mdiff.value[key]
-          }
-          diffs.push(newDiff)
-        }
+    var results
+    // do diffing seperately for each view
+    for (var view of this._views) {
+      // slice items from state with static getItems call
+      var items = view.Component.getItems(this.state)
+      var initialItems = []
+      if (typeof items === 'object') initialItems = {}
+      if(!view.prevItems) {
+        results = diff(initialItems, items)
       }
       else {
-        diffs.push(mdiff)
+        results = diff(view.prevItems, items)
+      }
+      view.prevItems = clone(items)
+      for (var patch of results) {
+        this.applyPatch(patch, view)
+      }
+    }
+    // render updates
+    this.update()
+  }
+
+  applyPatch(patch, view) {
+    var self = this
+    var idx = patch.path[0]
+    var item = view.Component.getItems(this.state)[idx]
+    var component
+
+    if (patch.op === 'add') {
+      if (patch.path.length > 1) {
+        patch.op = 'replace'
+      }
+      else {
+        component = new view.Component(this.state, ((eventName, data) => {
+          self.emitter.emit(eventName, data)
+        }), item)
+        component.container.name = `${view.Component.name}-${idx}`
+        view.container.addChild(component.container)
+        view.components[idx] = component
+        component.create(item)
       }
     }
 
-    for (var mdiff of diffs) {
-      var component = null
-      var namespace = mdiff.path[0]
-      var itemId = mdiff.path[1]
-      var item = this.state[namespace][itemId]
-      var view = this._views[namespace]
-      var self = this
-      // if diff does not concern any view skip it
-      if (!view) return
-
-      if (mdiff.op === 'add') {
-        if (mdiff.path.length > 2) {
-          mdiff.op = 'replace'
-        }
-        else {
-          component = new view.Component(this.state, ((eventName, data) => {
-            self.emitter.emit(eventName, data)
-          }), item)
-          component.container.name = `${namespace}-${itemId}`
-          view.container.addChild(component.container)
-          view.components[itemId] = component
-          component.create(item)
-        }
+    if (patch.op === 'remove') {
+      if (patch.path.length > 2) {
+        patch.op = 'replace'
       }
-
-      if (mdiff.op === 'remove') {
-        if (mdiff.path.length > 2) {
-          mdiff.op = 'replace'
-        }
-        else {
-          component = view.components[itemId]
-          view.container.removeChild(container)
-          delete view.container[itemId]
-        }
+      else {
+        component = view.components[idx]
+        view.container.removeChild(container)
+        delete view.container[idx]
       }
+    }
 
-      if (mdiff.op === 'replace') {
-        component = view.components[itemId]
-        component.update(item, mdiff)
-      }
-
-      // render updates
-      this.update()
+    if (patch.op === 'replace') {
+      component = view.components[idx]
+      component.update(item, patch)
     }
   }
 

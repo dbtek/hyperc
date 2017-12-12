@@ -1,4 +1,5 @@
 const assert = require('assert')
+const diff = require('just-diff').diff
 
 class Component {
   constructor(state, emit, props) {
@@ -6,6 +7,10 @@ class Component {
     this.state = state
     this.emit = emit
     this.container = new createjs.Container()
+  }
+
+  static getItems() {
+    throw new Error('hyperc/component: getItems should be implemented!')
   }
 
   identity() {
