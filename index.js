@@ -96,8 +96,8 @@ module.exports = class HyperC {
       }
       else {
         component = view.components[idx]
-        view.container.removeChild(container)
-        delete view.container[idx]
+        view.container.removeChild(component.container)
+        delete view.components[idx]
       }
     }
 
