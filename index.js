@@ -10,7 +10,7 @@ module.exports = class HyperC {
     if (typeof selector === 'string') {
       selector = document.querySelector(selector)
     }
-    this.stage = new document.createjs.Stage(selector)
+    this.stage = new window.createjs.Stage(selector)
     this.stage.name = 'HyperC Root Stage'
     this.emitter = nanobus('hyperc.emit')
     this.state = {}
@@ -36,7 +36,7 @@ module.exports = class HyperC {
 
   render (Cls) {
     assert(Cls.prototype instanceof Component, 'render only accepts classes inherited Component')
-    var container = new document.createjs.Container()
+    var container = new window.createjs.Container()
     this.stage.addChild(container)
     this._views.push({
       Component: Cls,
