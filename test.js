@@ -68,7 +68,7 @@ tape('Component class', (t) => {
   var rect = new Rect()
 
   t.throws(() => {
-    rect.getItems()
+    Item.getItems()
   }, null, 'Component should implement getItems method')
 
   t.throws(() => {
