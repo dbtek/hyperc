@@ -24,7 +24,7 @@ const consecutive = require('consecutive')
 
 var app = new Hyperc('#stage')
 
-function circleStore(state, emitter) {
+function circleStore (state, emitter) {
   state.circles = [
     {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
   ]
@@ -47,15 +47,15 @@ function circleStore(state, emitter) {
 }
 
 class Circle extends Component {
-  static getItems(state) {
+  static getItems (state) {
     return state.circles
   }
 
-  identity(props) {
+  identity (props) {
     return props.id
   }
 
-  create(props) {
+  create (props) {
     var shape = new createjs.Shape()
     shape.graphics.beginFill(props.color).drawCircle(0, 0, props.radius).endFill()
     shape.x = props.x
@@ -72,7 +72,7 @@ class Circle extends Component {
     })
   }
 
-  update(props, patch) {
+  update (props, patch) {
     this.shape.x = props.x
     this.shape.y = props.y
     this.shape.graphics.clear().beginFill(props.color).drawCircle(0, 0, props.radius).endFill()
