@@ -6,18 +6,18 @@ var app = new Hyperc('#stage')
 
 function circleStore (state, emitter) {
   state.circles = [
-    {id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue'}
+    { id: 1, x: 100, y: 100, radius: 100, color: 'DeepSkyBlue' }
   ]
   // set next id 2
   var nextId = consecutive(2)
 
   emitter.on('circle:add', item => {
     const id = nextId()
-    state.circles.push(Object.assign({}, item, {id}))
+    state.circles.push(Object.assign({}, item, { id }))
     emitter.emit('render')
   })
 
-  emitter.on('circle:moveItem', ({id, x, y}) => {
+  emitter.on('circle:moveItem', ({ id, x, y }) => {
     var circle = state.circles.filter(c => c.id === id)[0]
     if (!circle) return
     circle.x = x

@@ -30,7 +30,7 @@ module.exports = class HyperC {
   }
 
   use (cb) {
-    assert.equal(typeof cb, 'function', 'hyperc.use: cb should be type function')
+    assert.strictEqual(typeof cb, 'function', 'hyperc.use: cb should be type function')
     cb(this.state, this.emitter, this)
   }
 
