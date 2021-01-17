@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "budo": "^10.0.4",
-    "codecov": "^3.0.0",
+    "codecov": "^3.7.1",
     "consecutive": "^5.0.4",
     "es2040": "^1.2.6",
     "istanbul": "^0.4.5",
